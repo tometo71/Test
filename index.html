@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ভালোবাসার প্রশ্নপত্র</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+      color: red;
+    }
+
+    h1, .question, .poem {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: red;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ffaaaa;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff4d4d;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(45deg);
+      animation: float 6s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hearts" id="hearts-container"></div>
+
+<div class="container">
+  <h1>আপনার জন্য কিছু একটা...</h1>
+  <button id="startBtn">শুরু করুন</button>
+
+  <div id="q1" class="hidden">
+    <p class="question">আপনি কি সুহাসিনী বলছিলেন?</p>
+    <button onclick="showNext('no1')">না</button>
+    <button onclick="showNext('yes1')">হ্যাঁ</button>
+  </div>
+
+  <div id="q2" class="hidden">
+    <p class="question">আপনার জন্য একটি কবিতা ছিল শুনবেন?</p>
+    <button onclick="showNext('no2')">না</button>
+    <button onclick="showNext('yes2')">হ্যাঁ</button>
+  </div>
+
+  <div id="result" class="hidden">
+    <p class="question">পরবর্তী ধাপ আপনার জন্য না</p>
+  </div>
+
+  <div id="poem" class="hidden">
+    <p class="poem">
+      <h3>বৃষ্টি নামলো যখন</h3><br><br>
+      বৃষ্টি নামলো যখন, আমি উঠোন-পানে একা<br><br>
+      দৌড়ে গিয়ে ভেবেছিলাম, তোমার পায়ে দেখা<br><br>
+      হয়তো মেঘ-বৃষ্টিতে, বা শিউলিগাছের তলে<br><br>
+      আজানু কেশ ভিজিয়ে নিচ্ছ, আকাশ-ছাচাঁ জলে<br><br>
+      কিন্তু তুমি নেই বাইরে- অন্তরে মেঘে করে<br><br>
+      ভারি ব্যাপক বৃষ্টি, আমার বুকের মধ্যে ঝরে ।।<br><br><br>
+      <h3>(বি.দ্র. কবিতাটি কপি করা হয়েছে।)</h3>
+    </p>
+  </div>
+
+  <!-- Hidden audio files -->
+  <audio id="bgMusic" loop>
+    <source src="your-background.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="poemAudio">
+    <source src="your-poem.mp3" type="audio/mpeg">
+  </audio>
+</div>
+
+<script>
+  const startBtn = document.getElementById('startBtn');
+  const music = document.getElementById('bgMusic');
+  const poemAudio = document.getElementById('poemAudio');
+
+  // ভলিউম কমানো হয়েছে
+  music.volume = 0.2;
+
+  startBtn.onclick = () => {
+    startBtn.classList.add('hidden');
+    document.getElementById('q1').classList.remove('hidden');
+    music.play();
+  }
+
+  function showNext(step) {
+    document.getElementById('q1').classList.add('hidden');
+    document.getElementById('q2').classList.add('hidden');
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('poem').classList.add('hidden');
+
+    if (step === 'no1' || step === 'no2') {
+      document.getElementById('result').classList.remove('hidden');
+    } else if (step === 'yes1') {
+      document.getElementById('q2').classList.remove('hidden');
+    } else if (step === 'yes2') {
+      document.getElementById('poem').classList.remove('hidden');
+      poemAudio.currentTime = 0;
+      poemAudio.play().catch((e) => {
+        console.log("Auto-play failed:", e);
+      });
+    }
+  }
+
+  // Heart animation
+  const heartContainer = document.getElementById('hearts-container');
+  for (let i = 0; i < 20; i++) {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+    heartContainer.appendChild(heart);
+  }
+</script>
+
+</body>
+</html>
